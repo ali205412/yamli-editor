@@ -30,6 +30,8 @@ pub fn create_preferences_window(config: Rc<RefCell<Config>>, main_webview: WebV
         "Nord",
         "Monokai",
         "Solarized Dark",
+        "Pastel",
+        "Light",
     ] {
         theme_combo.append_text(theme);
     }
@@ -39,6 +41,8 @@ pub fn create_preferences_window(config: Rc<RefCell<Config>>, main_webview: WebV
         "nord" => 2,
         "monokai" => 3,
         "solarized-dark" => 4,
+        "pastel" => 5,
+        "light" => 6,
         _ => 0,
     };
     theme_combo.set_active(Some(active_index));
@@ -128,6 +132,8 @@ pub fn create_preferences_window(config: Rc<RefCell<Config>>, main_webview: WebV
             "Nord" => "nord",
             "Monokai" => "monokai",
             "Solarized Dark" => "solarized-dark",
+            "Pastel" => "pastel",
+            "Light" => "light",
             _ => "tokyo-night",
         }
         .to_string();

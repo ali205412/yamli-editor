@@ -17,6 +17,38 @@ pub struct Theme {
 
 pub fn get_theme(name: &str) -> Theme {
     match name {
+        "pastel" => Theme {
+            background: "#f7f3f7",
+            editor_bg: "#fdfafd",
+            editor_bg_focus: "#ffffff",
+            text: "#4a4a4a",
+            popup_bg: "#fdfafd",
+            popup_border: "#e8d4e8",
+            popup_shadow: "rgba(0, 0, 0, 0.1)",
+            suggestion_text: "#4a4a4a",
+            suggestion_bg_hover: "#f5e6f5",
+            suggestion_bg_selected: "#e8d4e8",
+            suggestion_text_selected: "#2a2a2a",
+            scrollbar_track: "#fdfafd",
+            scrollbar_thumb: "#e8d4e8",
+            scrollbar_thumb_hover: "#d8b4d8",
+        },
+        "light" => Theme {
+            background: "#f5f5f5",
+            editor_bg: "#fcfcfc",
+            editor_bg_focus: "#ffffff",
+            text: "#2c2c2c",
+            popup_bg: "#fcfcfc",
+            popup_border: "#e0e0e0",
+            popup_shadow: "rgba(0, 0, 0, 0.1)",
+            suggestion_text: "#2c2c2c",
+            suggestion_bg_hover: "#f0f0f0",
+            suggestion_bg_selected: "#e0e0e0",
+            suggestion_text_selected: "#1a1a1a",
+            scrollbar_track: "#fcfcfc",
+            scrollbar_thumb: "#e0e0e0",
+            scrollbar_thumb_hover: "#d0d0d0",
+        },
         "dracula" => Theme {
             background: "#282a36",
             editor_bg: "#1e1f29",
