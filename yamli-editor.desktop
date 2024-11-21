@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Yamli Editor
+GenericName=Arabic Text Editor
+Comment=Type Arabic using Latin characters
+Exec=yamli-editor
+Icon=accessories-text-editor
+Terminal=false
+Categories=GTK;Utility;TextEditor;
+Keywords=Text;Editor;Arabic;Yamli;
+StartupNotify=true
