@@ -35,7 +35,10 @@ fn main() {
 
         let (tx, rx) = channel();
         if let Ok(mut watcher) = watcher(tx, Duration::from_millis(500)) {
-            if watcher.watch("config.toml", RecursiveMode::NonRecursive).is_ok() {
+            if watcher
+                .watch("config.toml", RecursiveMode::NonRecursive)
+                .is_ok()
+            {
                 // Use a more efficient idle callback that doesn't block the UI
                 let mut last_reload = std::time::Instant::now();
                 glib::source::idle_add_local(move || {
