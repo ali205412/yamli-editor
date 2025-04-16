@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -42,16 +45,12 @@ jobs:
         with:
           command: build
           args: --verbose
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
       
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           command: test
           args: --verbose
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
   lint:
     name: Lint
@@ -86,16 +85,12 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
       
       - name: Clippy
         uses: actions-rs/cargo@v1
         with:
           command: clippy
           args: -- -D warnings
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
   security_audit:
     name: Security audit
@@ -119,11 +114,7 @@ jobs:
       
       - name: Install cargo-audit
         run: cargo install cargo-audit
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
       
       - name: Run security audit
         run: cargo audit
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
           
