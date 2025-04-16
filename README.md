@@ -28,6 +28,17 @@ or
 paru -S yamli-editor
 ```
 
+### Fedora (COPR)
+
+Enable the COPR repository and install the package:
+
+```bash
+dnf copr enable yuikotegawa/yamli-editor
+dnf install yamli-editor
+```
+
+More information: [https://copr.fedorainfracloud.org/coprs/yuikotegawa/yamli-editor/](https://copr.fedorainfracloud.org/coprs/yuikotegawa/yamli-editor/)
+
 ### Debian/Ubuntu
 
 Download the latest .deb package from the [releases page](https://github.com/ali205412/yamli-editor/releases) and install it:
