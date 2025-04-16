@@ -49,7 +49,7 @@ jobs:
           su builder -c "makepkg --printsrcinfo > .SRCINFO"
 
       - name: Deploy to AUR
-        uses: KSXGitHub/github-actions-deploy-aur@v2.7.0
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
         with:
           pkgname: yamli-editor
           pkgbuild: ./PKGBUILD
