@@ -1,0 +1,175 @@
+name: Publish to COPR
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  copr-publish:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          dnf -y update
+          dnf -y install \
+            git \
+            rpm-build \
+            rpmdevtools \
+            copr-cli \
+            fedora-packager \
+            python3-pip \
+            rust \
+            cargo \
+            gtk3-devel \
+            webkit2gtk4.1-devel \
+            javascriptcoregtk4.1-devel \
+            webkit2gtk3-devel \
+            javascriptcoregtk4.0-devel \
+            libsoup-devel \
+            atk-devel \
+            cairo-devel \
+            gdk-pixbuf2-devel \
+            glib2-devel \
+            pango-devel
+
+      - name: Get version
+        id: get_version
+        run: |
+          # Extract version from tag or use a default version for manual runs
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            # For workflow_dispatch or when no tag is available
+            VERSION=$(grep -m 1 "version = " Cargo.toml | cut -d '"' -f 2)
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Using version: $VERSION"
+
+      - name: Setup copr-cli
+        run: |
+          mkdir -p ~/.config
+          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+
+      - name: Create spec file
+        run: |
+          # Create spec file with local source
+          cat > yamli-editor.spec << EOF
+          Name:           yamli-editor
+          Version:        $VERSION
+          Release:        1%{?dist}
+          Summary:        Native Yamli editor for Wayland
+          License:        MIT
+          URL:            https://github.com/${{ github.repository }}
+          
+          # Using local source approach
+          Source0:        %{name}-%{version}.tar.gz
+          
+          BuildRequires:  rust
+          BuildRequires:  cargo
+          BuildRequires:  gtk3-devel
+          BuildRequires:  webkit2gtk4.1-devel
+          BuildRequires:  javascriptcoregtk4.1-devel
+          BuildRequires:  webkit2gtk3-devel
+          BuildRequires:  javascriptcoregtk4.0-devel
+          BuildRequires:  libsoup-devel
+          BuildRequires:  atk-devel
+          BuildRequires:  cairo-devel
+          BuildRequires:  gdk-pixbuf2-devel
+          BuildRequires:  glib2-devel
+          BuildRequires:  pango-devel
+          
+          %description
+          Native Yamli editor for Wayland
+          
+          %prep
+          %setup -q
+          
+          %build
+          cargo build --release
+          
+          %install
+          mkdir -p %{buildroot}%{_bindir}
+          mkdir -p %{buildroot}%{_datadir}/applications
+          mkdir -p %{buildroot}%{_sysconfdir}/%{name}
+          install -m 755 target/release/yamli-editor %{buildroot}%{_bindir}/yamli-editor
+          install -m 644 yamli-editor.desktop %{buildroot}%{_datadir}/applications/
+          install -m 644 config.toml %{buildroot}%{_sysconfdir}/%{name}/
+          
+          %files
+          %{_bindir}/yamli-editor
+          %{_datadir}/applications/yamli-editor.desktop
+          %{_sysconfdir}/%{name}/config.toml
+          
+          %changelog
+          * $(date '+%a %b %d %Y') GitHub Action <actions@github.com> - %{version}-1
+          - Update to version %{version}
+          EOF
+
+      - name: Setup RPM build environment
+        run: |
+          # Initialize RPM build directories
+          rpmdev-setuptree
+          
+          # Show directory structure
+          ls -la ~/rpmbuild
+      
+      - name: Build SRPM
+        run: |
+          # Debug information
+          echo "Current directory: $(pwd)"
+          echo "Using version: $VERSION"
+          
+          # Create source tarball
+          tar -czf ~/rpmbuild/SOURCES/yamli-editor-$VERSION.tar.gz --transform="s,^,yamli-editor-$VERSION/," --exclude='.git*' .
+          
+          # List files in SOURCES directory
+          echo "Contents of SOURCES directory:"
+          ls -la ~/rpmbuild/SOURCES/
+          
+          # Copy spec file
+          cp yamli-editor.spec ~/rpmbuild/SPECS/
+          
+          # Build SRPM
+          cd ~/rpmbuild/SPECS/
+          rpmbuild -bs yamli-editor.spec
+
+      - name: Submit to COPR
+        run: |
+          # Find the SRPM file
+          SRPM_FILE=$(find ~/rpmbuild/SRPMS/ -name "yamli-editor-*.src.rpm" | head -n 1)
+          echo "Found SRPM: $SRPM_FILE"
+          
+          # Check if project exists
+          if ! copr-cli list-package-names yuikotegawa/yamli-editor &>/dev/null; then
+            echo "Project doesn't exist. Creating it now..."
+            copr-cli create \
+              --chroot fedora-rawhide-x86_64 \
+              --chroot fedora-rawhide-i386 \
+              --chroot fedora-42-x86_64 \
+              --chroot fedora-42-i386 \
+              --chroot fedora-41-x86_64 \
+              --chroot fedora-41-i386 \
+              --chroot fedora-40-x86_64 \
+              --chroot fedora-40-i386 \
+              --description "Native Yamli editor for Wayland" \
+              --instructions "Install using 'dnf install yamli-editor'" \
+              --webhook-rebuild on \
+              yuikotegawa/yamli-editor
+            echo "Project created successfully"
+          else
+            echo "Project already exists"
+          fi
+          
+          # Submit to COPR
+          copr-cli build yuikotegawa/yamli-editor $SRPM_FILE 

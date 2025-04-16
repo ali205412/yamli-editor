@@ -1,0 +1,11 @@
+[theme]
+name = "light"
+
+[font]
+family = "IBM Plex Sans Arabic"
+size = 18
+line_height = 1.7999999523162842
+
+[editor]
+padding = 20
+border_radius = 12

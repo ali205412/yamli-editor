@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Yamli Debug</title>
+    <script>
+        // Intercept and log all network requests
+        const originalFetch = window.fetch;
+        window.fetch = function() {
+            console.log('Fetch request:', arguments);
+            return originalFetch.apply(this, arguments);
+        };
+
+        const originalXHR = window.XMLHttpRequest;
+        window.XMLHttpRequest = function() {
+            const xhr = new originalXHR();
+            const originalOpen = xhr.open;
+            xhr.open = function() {
+                console.log('XHR request:', arguments);
+                return originalOpen.apply(this, arguments);
+            };
+            return xhr;
+        };
+    </script>
+    <script type="text/javascript" src="https://api.yamli.com/js/yamli_api.js"></script>
+    <script>
+        // Log all script loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('All loaded scripts:');
+            document.querySelectorAll('script').forEach(script => {
+                console.log('Script:', script.src || 'inline');
+            });
+        });
+
+        // Log Yamli object structure
+        function dumpObject(obj, path = '', seen = new Set()) {
+            if (obj === null || typeof obj !== 'object') {
+                console.log(path + ':', obj);
+                return;
+            }
+
+            if (seen.has(obj)) {
+                console.log(path + ': [Circular]');
+                return;
+            }
+
+            seen.add(obj);
+
+            for (let key in obj) {
+                try {
+                    const newPath = path ? path + '.' + key : key;
+                    const value = obj[key];
+                    
+                    if (typeof value === 'function') {
+                        console.log(newPath + ': [Function]');
+                        console.log('Function source:', value.toString());
+                    } else {
+                        dumpObject(value, newPath, seen);
+                    }
+                } catch (e) {
+                    console.log(path + '.' + key + ': [Error accessing]', e);
+                }
+            }
+        }
+
+        // Monitor DOM changes
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                console.log('DOM Mutation:', {
+                    type: mutation.type,
+                    target: mutation.target,
+                    addedNodes: mutation.addedNodes,
+                    removedNodes: mutation.removedNodes,
+                    attributes: mutation.attributeName
+                });
+            });
+        });
+
+        window.addEventListener('load', () => {
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                characterData: true
+            });
+
+            // Wait for Yamli to load
+            const checkYamli = setInterval(() => {
+                if (typeof Yamli === 'object') {
+                    clearInterval(checkYamli);
+                    console.log('Yamli loaded, dumping structure:');
+                    dumpObject(Yamli);
+
+                    // Initialize Yamli
+                    console.log('Initializing Yamli...');
+                    Yamli.init({
+                        uiLanguage: 'ar',
+                        startMode: 'on'
+                    });
+                    Yamli.yamlify('editor');
+                }
+            }, 100);
+        });
+    </script>
+</head>
+<body>
+    <textarea id="editor" style="width: 500px; height: 300px;"></textarea>
+</body>
+</html>
