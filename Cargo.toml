@@ -13,7 +13,7 @@ categories = ["text-editors", "localization"]
 gtk = { version = "0.15.5", features = ["v3_24"] }
 webkit2gtk = "0.18.0"
 serde = { version = "1.0", features = ["derive"] }
-toml = "0.8.19"
+toml = "0.9.5"
 gdk = "0.15.4"
 notify = "4.0.17"
 glib = "0.15.12"
