@@ -1,12 +1,13 @@
 use crate::config::Config;
 use crate::themes;
-use webkit2gtk::{gio::Cancellable, traits::*, WebView};
+use webkit2gtk::{gio::Cancellable, WebView, LoadEvent, Settings};
+use webkit2gtk::{SettingsExt, WebViewExt};
 
 pub fn setup_webview() -> WebView {
     let webview = WebView::new();
 
     // Enable JavaScript
-    let settings = webkit2gtk::Settings::new();
+    let settings = Settings::new();
     settings.set_enable_javascript(true);
     settings.set_javascript_can_access_clipboard(true);
     settings.set_enable_developer_extras(true);
@@ -24,7 +25,6 @@ pub fn reload_webview(webview: &WebView, config: &Config) {
 
     // Connect to load-changed signal
     webview.connect_load_changed(move |_, event| {
-        use webkit2gtk::LoadEvent;
         if event == LoadEvent::Finished {
             // Re-focus the editor after load
             let js = "document.getElementById('editor').focus();";

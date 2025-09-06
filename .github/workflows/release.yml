@@ -15,7 +15,7 @@ env:
 
 jobs:
   create-release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
@@ -32,8 +32,8 @@ jobs:
 
   build-debian:
     needs: create-release
-    runs-on: ubuntu-22.04
-    container: debian:bullseye
+    runs-on: ubuntu-latest
+    container: debian:bookworm
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
@@ -44,7 +44,7 @@ jobs:
             build-essential \
             git \
             libgtk-3-dev \
-            libwebkit2gtk-4.0-dev \
+            libwebkit2gtk-4.1-dev \
             libsoup2.4-dev \
             libatk1.0-dev \
             libcairo2-dev \
@@ -74,7 +74,7 @@ jobs:
           Architecture: amd64
           Maintainer: Ali <ali205412@github.com>
           Description: Native Yamli editor for Wayland
-          Depends: libgtk-3-0, libwebkit2gtk-4.0-37, libsoup2.4-1
+          Depends: libgtk-3-0, libwebkit2gtk-4.1-0, libsoup2.4-1
           EOF
           dpkg-deb --build debian
           mv debian.deb yamli-editor.deb

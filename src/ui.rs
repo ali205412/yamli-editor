@@ -183,9 +183,9 @@ pub fn setup_main_window(config: Rc<RefCell<Config>>, webview: WebView) -> gtk::
 
         if state.contains(gdk::ModifierType::CONTROL_MASK) && keyval == gdk::keys::constants::p {
             create_preferences_window(config_clone.clone(), webview_clone.clone());
-            Inhibit(true)
+            glib::Propagation::Stop
         } else {
-            Inhibit(false)
+            glib::Propagation::Proceed
         }
     });
 
@@ -194,7 +194,7 @@ pub fn setup_main_window(config: Rc<RefCell<Config>>, webview: WebView) -> gtk::
 
     window.connect_delete_event(|_, _| {
         gtk::main_quit();
-        Inhibit(false)
+        glib::Propagation::Proceed
     });
 
     window

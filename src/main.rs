@@ -53,7 +53,7 @@ fn main() {
                             webview::reload_webview(&webview_clone, &config);
                         }
                     }
-                    glib::Continue(true)
+                    glib::ControlFlow::Continue
                 });
             }
         }
