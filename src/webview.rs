@@ -1,6 +1,6 @@
 use crate::config::Config;
 use crate::themes;
-use webkit2gtk::{gio::Cancellable, WebView, LoadEvent, Settings};
+use webkit2gtk::{gio::Cancellable, LoadEvent, Settings, WebView};
 use webkit2gtk::{SettingsExt, WebViewExt};
 
 pub fn setup_webview() -> WebView {
