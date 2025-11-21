@@ -1,6 +1,6 @@
 [package]
 name = "yamli-editor"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Ali"]
 description = "A native Yamli editor for Wayland"
