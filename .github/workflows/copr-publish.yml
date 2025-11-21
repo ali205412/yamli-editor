@@ -33,8 +33,6 @@ jobs:
             gtk3-devel \
             webkit2gtk4.1-devel \
             javascriptcoregtk4.1-devel \
-            webkit2gtk3-devel \
-            javascriptcoregtk4.0-devel \
             libsoup-devel \
             atk-devel \
             cairo-devel \
@@ -78,16 +76,8 @@ jobs:
           BuildRequires:  rust
           BuildRequires:  cargo
           BuildRequires:  gtk3-devel
-
-          # Conditional webkit2gtk dependencies based on Fedora version
-          %if 0%{?fedora} >= 43
           BuildRequires:  webkit2gtk4.1-devel
           BuildRequires:  javascriptcoregtk4.1-devel
-          %else
-          BuildRequires:  webkit2gtk3-devel
-          BuildRequires:  javascriptcoregtk4.0-devel
-          %endif
-
           BuildRequires:  libsoup-devel
           BuildRequires:  atk-devel
           BuildRequires:  cairo-devel
@@ -97,11 +87,7 @@ jobs:
 
           # Runtime dependencies
           Requires:       gtk3
-          %if 0%{?fedora} >= 43
           Requires:       webkit2gtk4.1
-          %else
-          Requires:       webkit2gtk
-          %endif
 
           %description
           Native Yamli editor for Wayland
@@ -172,13 +158,7 @@ jobs:
               --chroot fedora-rawhide-i386 \
               --chroot fedora-43-x86_64 \
               --chroot fedora-43-i386 \
-              --chroot fedora-42-x86_64 \
-              --chroot fedora-42-i386 \
-              --chroot fedora-41-x86_64 \
-              --chroot fedora-41-i386 \
-              --chroot fedora-40-x86_64 \
-              --chroot fedora-40-i386 \
-              --description "Native Yamli editor for Wayland" \
+              --description "Native Yamli editor for Wayland (Fedora 43+)" \
               --instructions "Install using 'dnf install yamli-editor'" \
               --webhook-rebuild on \
               yuikotegawa/yamli-editor

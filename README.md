@@ -30,6 +30,8 @@ paru -S yamli-editor
 
 ### Fedora (COPR)
 
+**Requires Fedora 43 or later**
+
 Enable the COPR repository and install the package:
 
 ```bash
